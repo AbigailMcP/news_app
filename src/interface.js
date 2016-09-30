@@ -1,7 +1,8 @@
+
 blobListen('#document').ready(function(){
 
-  var app = new App();
-  makeOL();
+
+  var story = new Story();
 
   var request = new XMLHttpRequest();
   var apiKey = "api-key=59001b87-63d3-4d83-aa21-ed20cfdbd037";
@@ -9,20 +10,14 @@ blobListen('#document').ready(function(){
 
   today = date.getFullYear()+"-"+ (date.getMonth() + 1)+ "-" + date.getDate();
 
-  request.open('GET', 'http://content.guardianapis.com/search?from-date=' + today + '&to-date='+ today +'&order-by=newest&show-fields=all&page-size=1&' + apiKey , true);
+  request.open('GET', 'http://content.guardianapis.com/search?from-date=' + today + '&to-date='+ today +'&order-by=newest&show-fields=all&page-size=5&' + apiKey , true);
 
   request.onload = function() {
     if (request.status >= 200 && request.status < 400) {
       // Success!
       var data = JSON.parse(request.responseText);
-      headline = data.response.results[0].fields.headline;
-      body = data.response.results[0].fields.body;
-      img = data.response.results[0].fields.thumbnail;
-
-      document.getElementById('news-title').appendChild(document.createTextNode(headline));
-      document.getElementById('news-body').appendChild(document.createTextNode(body));
-      document.getElementById('news-image').setAttribute("src", img);
-
+      stories = responseParse(data.response.results);
+      renderStories(stories)
     } else {
       // We reached our target server, but it returned an error
     }
@@ -32,62 +27,53 @@ blobListen('#document').ready(function(){
   };
 
   request.send();
-  
-  blobListen('create').click(function(){
-    var note = document.getElementById("new-note").value;
-    app.createNote(note);
-    document.getElementById('BlobList').appendChild(addLi());
-    updateHomeDisplay();
-  });
+
 
 //  Helper functions follow
 
-  function updateHomeDisplay() {
-    uiHome();
+  function createLiElements(){
+    item = document.createElement('li');
+    headline = document.createElement('h1');
+    summary = document.createElement('p');
+    image = document.createElement('img');
+    link = document.createElement('a');
+    link.appendChild(document.createTextNode("see full article.."));
   }
 
-  function uiHome(){
-    blobListen('uiCreateNote').show();
-    blobListen('uiList').show();
-  }
 
-  function makeOL() {
-    var list = document.createElement('ol');
-    list.setAttribute("id", "BlobList");
-    document.getElementById('uiList').appendChild(list);
-  }
-
-  function addLi() {
+  function addLi(i, story) {
     // creates <li></li>
-    var item = document.createElement('li');
-    // headline gets last notes abbr headline as a string
-    var headline = app.mapNotes().slice(-1)[0];
-    // index is the position of that headline in the arrb_notes array^
-    var index = app.mapNotes().lastIndexOf(headline);
+    createLiElements();
+
+    headline.appendChild(document.createTextNode(story.headline));
+    summary.appendChild(document.createTextNode(story.summarised));
+    image.setAttribute("src", story.imgUrl);
+    console.log(story.webUrl);
+    link.setAttribute("href", story.webUrl);
     // creates <li id="headline-0"></li>
-    item.setAttribute("id", "headline-" + index);
+    item.setAttribute("id", "headline-" + i);
     // append the actual string to the item (which is the li)
-    item.appendChild(document.createTextNode(headline));
-    document.getElementById('full-view').appendChild(addArticle(index));
-    addLiListener(item, index);
+    addToItem(headline,image,summary,link);
+    console.log(item);
     return item;
   }
 
-  function addArticle(index) {
-    // article is <p></p>
-    var article = document.createElement('p');
-    // set style="display:none" in the <p>p</p>
-    article.setAttribute("style", "display:none");
-    // adds the id="article and the index number to the p"
-    article.setAttribute("id", "article-" + index);
-    // saving the full article we want in fullNote var
-    var fullNote = app.notes[index];
-    article.appendChild(document.createTextNode(fullNote));
-    var button = createCloseBtn();
-    article.appendChild(button);
-    addCloseListener(button, index);
-    return article;
+
+  function renderStories(stories){
+    stories.forEach(function(story){
+      var i = stories.indexOf(story);
+      document.getElementById('storyList').appendChild(addLi(i, story));
+
+    })
   }
+
+  function addToItem(headline,image,summary,link){
+    item.appendChild(headline);
+    item.appendChild(image);
+    item.appendChild(summary);
+    summary.appendChild(link);
+  }
+
 
   function createCloseBtn() {
     var close = document.createElement("input");
