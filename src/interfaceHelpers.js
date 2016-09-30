@@ -7,7 +7,7 @@ function responseParse(responseDotResults){
         story.headline = af.headline;
         story.summarised = "something function that deals with Aylien";
         story.imgUrl = af.thumbnail;
-        story.webUrl = a.webUrl
+        story.webUrl = a.webUrl;
         stories.push(story);
       });
       return stories;
@@ -17,23 +17,24 @@ function renderStories(stories){
   stories.forEach(function(story){
     var i = stories.indexOf(story);
     document.getElementById('storyList').appendChild(addLi(i, story));
-  })
+  });
 }
+
 
 function addLi(i, story) {
   createLiElements();
-
   headline.appendChild(document.createTextNode(story.headline));
   summary.appendChild(document.createTextNode(story.summarised));
   image.setAttribute("src", story.imgUrl);
   link.setAttribute("href", story.webUrl);
-
   item.setAttribute("id", "headline-" + i);
   summary.setAttribute("id", "summary-" + i);
+  summary.setAttribute('style', 'display:none');
+  link.setAttribute('id', 'link-' + i);
   addToItem(headline,image,summary,link);
-
   return item;
 }
+
 
 function createLiElements(){
   item = document.createElement('li');
