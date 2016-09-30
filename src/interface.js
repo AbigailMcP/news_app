@@ -41,32 +41,32 @@ blobListen('#document').ready(function(){
   }
 
   function listChildren(){
-    var liList = document.getElementById('storyList').children
-    return liList
+    var liList = document.getElementById('storyList').children;
+    return liList;
   }
 
-function createListenerLi(liList) {
+  function createListenerLi(liList) {
 
-  Object.keys(liList).forEach(function(key){
-    blobListen(liList[key].id).click(function(){
-      var linkid = liList[key].lastChild.childNodes[1].id;
-      var request = new XMLHttpRequest();
-      var url = document.getElementById(linkid);
-      request.open('GET', 'http://news-summary-api.herokuapp.com/aylien?apiRequestUrl=https://api.aylien.com/api/v1/summarize?url=' + url, true);
-      request.onload = function() {
-        if (request.status >= 200 && request.status < 400) {
-         // Success!
-         var data = JSON.parse(request.responseText);
-       } else {
-         // We reached our target server, but it returned an error
-       }
-     };
-     request.onerror = function() {
-       // There was a connection error of some sort
-     };
-      request.send();
+    Object.keys(liList).forEach(function(key){
+      blobListen(liList[key].id).click(function(){
+        var linkid = liList[key].lastChild.childNodes[1].id;
+        var request = new XMLHttpRequest();
+        var url = document.getElementById(linkid);
+        request.open('GET', 'http://news-summary-api.herokuapp.com/aylien?apiRequestUrl=https://api.aylien.com/api/v1/summarize?url=' + url, true);
+        request.onload = function() {
+          if (request.status >= 200 && request.status < 400) {
+           // Success!
+            var data = JSON.parse(request.responseText);
+          } else {
+           // We reached our target server, but it returned an error
+          }
+        };
+        request.onerror = function() {
+         // There was a connection error of some sort
+        };
+        request.send();
+      });
     });
-  })
-}
+  }
 
 });
