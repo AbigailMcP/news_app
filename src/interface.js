@@ -5,8 +5,11 @@ blobListen('#document').ready(function(){
 
   var request = new XMLHttpRequest();
   var apiKey = "api-key=59001b87-63d3-4d83-aa21-ed20cfdbd037";
+  var date = new Date();
 
-  request.open('GET', 'http://content.guardianapis.com/search?from-date=2016-03-04&to-date=2016-03-04&order-by=newest&show-fields=all&page-size=1&' + apiKey , true);
+  today = date.getFullYear()+"-"+ (date.getMonth() + 1)+ "-" + date.getDate();
+
+  request.open('GET', 'http://content.guardianapis.com/search?from-date=' + today + '&to-date='+ today +'&order-by=newest&show-fields=all&page-size=1&' + apiKey , true);
 
   request.onload = function() {
     if (request.status >= 200 && request.status < 400) {
@@ -28,7 +31,8 @@ blobListen('#document').ready(function(){
     // There was a connection error of some sort
   };
 
-
+  request.send();
+  
   blobListen('create').click(function(){
     var note = document.getElementById("new-note").value;
     app.createNote(note);
